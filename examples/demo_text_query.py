@@ -114,7 +114,7 @@ if __name__ == "__main__":
             cmap = matplotlib.cm.get_cmap("jet")
             similarity_colormap = cmap(similarity_rel[0].detach().cpu().numpy())[:, :3]
             print(map_colors.shape, similarity_colormap.shape)
-            map_colors = 0.5 * map_colors + 0.5 * similarity_colormap
+            map_colors = 0.1 * map_colors + 0.9 * similarity_colormap
 
         # Assign colors and display GUI
         pcd.colors = o3d.utility.Vector3dVector(map_colors)
