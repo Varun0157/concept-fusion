@@ -100,6 +100,8 @@ def main():
             features, size=(H, W), mode="bilinear", align_corners=False
         )
         features = features.squeeze(0).permute(1, 2, 0)  # (H, W, C)
+        # Re-normalize after interpolation (bilinear changes norms)
+        features = torch.nn.functional.normalize(features, dim=-1)
 
     # Load camera intrinsics
     K = load_camera_intrinsics(args.intrinsics_path)
