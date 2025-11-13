@@ -1,0 +1,10 @@
+dataset_name: 'droid'
+camera_params:
+  image_height: 720
+  image_width: 1280
+  fx: 525.53515625
+  fy: 525.53515625
+  cx: 636.3092041015625
+  cy: 365.46759033203125
+  png_depth_scale: 1000.0  # depth_mm folder = millimeters, so 1000mm = 1m
+  crop_edge: 0

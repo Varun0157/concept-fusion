@@ -76,7 +76,7 @@ class ProgramArgs:
 
 def get_dataset(dataconfig_path, basedir, sequence, **kwargs):
     config_dict = load_dataset_config(dataconfig_path)
-    if config_dict["dataset_name"].lower() in ["icl"]:
+    if config_dict["dataset_name"].lower() in ["icl", "droid"]:
         return ICLDataset(config_dict, basedir, sequence, **kwargs)
     elif config_dict["dataset_name"].lower() in ["replica"]:
         return ReplicaDataset(config_dict, basedir, sequence, **kwargs)
