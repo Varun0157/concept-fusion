@@ -136,10 +136,26 @@ def main():
 
     # Extract valid points, colors, normals, embeddings
     valid_mask_cpu = valid_mask.cpu()
+
+    # Filter out zero-norm embeddings (uncovered pixels from SAM)
+    embedding_norms = torch.norm(features, dim=-1)
+    valid_embedding_mask = embedding_norms > 1e-6
+    combined_mask = valid_mask_cpu & valid_embedding_mask
+
+    num_combined = combined_mask.sum().item()
+    num_zero_embeddings = valid_mask_cpu.sum().item() - num_combined
+    print(f"  Valid embeddings: {num_combined} / {num_valid} (filtered {num_zero_embeddings} zero-norm embeddings)")
+
     points = vertex_map[0, 0][valid_mask]
-    colors = rgb[valid_mask_cpu]
+    colors = rgb[combined_mask]
     normals = normal_map[0, 0][valid_mask]
-    embeddings = features[valid_mask_cpu]
+    embeddings = features[combined_mask]
+
+    # Also filter points/normals to match
+    # Need to filter on GPU first, then extract
+    combined_mask_gpu = combined_mask.to(args.device)
+    points = vertex_map[0, 0][combined_mask_gpu]
+    normals = normal_map[0, 0][combined_mask_gpu]
 
     print(f"  Points shape: {points.shape}")
     print(f"  Colors shape: {colors.shape}")
