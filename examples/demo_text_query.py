@@ -86,29 +86,13 @@ if __name__ == "__main__":
 
         # Normalize the map
         map_embeddings = pointclouds.embeddings_padded.cuda()
-
-        # Add small epsilon to avoid zero-norm vectors causing NaN during normalization
-        eps = 1e-6
-        norms = torch.norm(map_embeddings, dim=2, keepdim=True)
-        print(f"Norms: min={norms.min().item():.8f}, max={norms.max().item():.4f}, has_zero={(norms == 0).any().item()}")
-
-        map_embeddings_norm = map_embeddings / (norms + eps)
-
+        map_embeddings_norm = torch.nn.functional.normalize(map_embeddings, dim=2)
         print(f"map_embeddings_norm: {map_embeddings_norm.shape}")
-        print(f"map_embeddings_norm has NaN: {torch.isnan(map_embeddings_norm).any().item()}")
-        print(f"map_embeddings_norm stats: min={map_embeddings_norm.min().item():.4f}, max={map_embeddings_norm.max().item():.4f}")
-
         print(f"textfeat: {textfeat.shape}")
-        print(f"textfeat has NaN: {torch.isnan(textfeat).any().item()}")
 
         cosine_similarity = torch.nn.CosineSimilarity(dim=-1)
 
-        similarity = cosine_similarity(
-            map_embeddings_norm, textfeat
-        )
-
-        print(f"similarity has NaN: {torch.isnan(similarity).any().item()}")
-        print(f"Similarity stats: min={similarity.min().item():.4f}, max={similarity.max().item():.4f}, mean={similarity.mean().item():.4f}, std={similarity.std().item():.4f}")
+        similarity = cosine_similarity(map_embeddings_norm, textfeat)
 
         pcd = pointclouds.open3d(0)
         map_colors = np.asarray(pcd.colors)
@@ -128,7 +112,7 @@ if __name__ == "__main__":
             cmap = matplotlib.cm.get_cmap("jet")
             similarity_colormap = cmap(similarity_rel[0].detach().cpu().numpy())[:, :3]
             print(map_colors.shape, similarity_colormap.shape)
-            map_colors = 0.1 * map_colors + 0.9 * similarity_colormap
+            map_colors = 0.5 * map_colors + 0.5 * similarity_colormap
 
         # Assign colors and display GUI
         pcd.colors = o3d.utility.Vector3dVector(map_colors)
