@@ -128,17 +128,16 @@ def main():
     normal_map = rgbd.global_normal_map  # (1, 1, H, W, 3)
 
     # Filter valid depths
-    valid_mask = rgbd.valid_depth_mask.squeeze(-1)  # (1, 1, H, W)
-    valid_mask = valid_mask[0, 0]  # (H, W)
-
+    valid_mask = rgbd.valid_depth_mask.squeeze(-1)[0, 0]  # (H, W)
     num_valid = valid_mask.sum().item()
     print(f"  Valid points: {num_valid} / {H * W} ({100 * num_valid / (H * W):.1f}%)")
 
     # Extract valid points, colors, normals, embeddings
-    points = vertex_map[0, 0][valid_mask]  # (N, 3)
-    colors = rgb[valid_mask]  # (N, 3)
-    normals = normal_map[0, 0][valid_mask]  # (N, 3)
-    embeddings = features[valid_mask]  # (N, feat_dim)
+    valid_mask_cpu = valid_mask.cpu()
+    points = vertex_map[0, 0][valid_mask]
+    colors = rgb[valid_mask_cpu]
+    normals = normal_map[0, 0][valid_mask]
+    embeddings = features[valid_mask_cpu]
 
     print(f"  Points shape: {points.shape}")
     print(f"  Colors shape: {colors.shape}")
