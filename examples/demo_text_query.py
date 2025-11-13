@@ -96,6 +96,9 @@ if __name__ == "__main__":
             map_embeddings_norm, textfeat
         )
 
+        # Debug: Print similarity statistics
+        print(f"Similarity stats: min={similarity.min().item():.4f}, max={similarity.max().item():.4f}, mean={similarity.mean().item():.4f}, std={similarity.std().item():.4f}")
+
         pcd = pointclouds.open3d(0)
         map_colors = np.asarray(pcd.colors)
 
