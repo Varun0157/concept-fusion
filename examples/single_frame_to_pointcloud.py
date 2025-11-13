@@ -144,7 +144,9 @@ def main():
 
     num_combined = combined_mask.sum().item()
     num_zero_embeddings = valid_mask_cpu.sum().item() - num_combined
-    print(f"  Valid embeddings: {num_combined} / {num_valid} (filtered {num_zero_embeddings} zero-norm embeddings)")
+    print(
+        f"  Valid embeddings: {num_combined} / {num_valid} (filtered {num_zero_embeddings} zero-norm embeddings)"
+    )
 
     points = vertex_map[0, 0][valid_mask]
     colors = rgb[combined_mask]
@@ -152,7 +154,6 @@ def main():
     embeddings = features[combined_mask]
 
     # Also filter points/normals to match
-    # Need to filter on GPU first, then extract
     combined_mask_gpu = combined_mask.to(args.device)
     points = vertex_map[0, 0][combined_mask_gpu]
     normals = normal_map[0, 0][combined_mask_gpu]
