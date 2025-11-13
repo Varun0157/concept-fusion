@@ -90,10 +90,16 @@ if __name__ == "__main__":
         # Add small epsilon to avoid zero-norm vectors causing NaN during normalization
         eps = 1e-6
         norms = torch.norm(map_embeddings, dim=2, keepdim=True)
+        print(f"Norms: min={norms.min().item():.8f}, max={norms.max().item():.4f}, has_zero={(norms == 0).any().item()}")
+
         map_embeddings_norm = map_embeddings / (norms + eps)
 
         print(f"map_embeddings_norm: {map_embeddings_norm.shape}")
+        print(f"map_embeddings_norm has NaN: {torch.isnan(map_embeddings_norm).any().item()}")
+        print(f"map_embeddings_norm stats: min={map_embeddings_norm.min().item():.4f}, max={map_embeddings_norm.max().item():.4f}")
+
         print(f"textfeat: {textfeat.shape}")
+        print(f"textfeat has NaN: {torch.isnan(textfeat).any().item()}")
 
         cosine_similarity = torch.nn.CosineSimilarity(dim=-1)
 
@@ -101,7 +107,7 @@ if __name__ == "__main__":
             map_embeddings_norm, textfeat
         )
 
-        # Debug: Print similarity statistics
+        print(f"similarity has NaN: {torch.isnan(similarity).any().item()}")
         print(f"Similarity stats: min={similarity.min().item():.4f}, max={similarity.max().item():.4f}, mean={similarity.mean().item():.4f}, std={similarity.std().item():.4f}")
 
         pcd = pointclouds.open3d(0)
