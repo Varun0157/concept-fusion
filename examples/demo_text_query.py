@@ -87,18 +87,13 @@ if __name__ == "__main__":
         # Normalize the map
         map_embeddings = pointclouds.embeddings_padded.cuda()
 
-        # Debug: Check for NaN in embeddings BEFORE normalization
-        print(f"map_embeddings has NaN: {torch.isnan(map_embeddings).any().item()}")
-        print(f"map_embeddings stats: min={map_embeddings.min().item():.4f}, max={map_embeddings.max().item():.4f}, mean={map_embeddings.mean().item():.4f}")
+        # Add small epsilon to avoid zero-norm vectors causing NaN during normalization
+        eps = 1e-6
+        norms = torch.norm(map_embeddings, dim=2, keepdim=True)
+        map_embeddings_norm = map_embeddings / (norms + eps)
 
-        map_embeddings_norm = torch.nn.functional.normalize(map_embeddings, dim=2)
         print(f"map_embeddings_norm: {map_embeddings_norm.shape}")
-
-        # Debug: Check for NaN AFTER normalization
-        print(f"map_embeddings_norm has NaN: {torch.isnan(map_embeddings_norm).any().item()}")
-
         print(f"textfeat: {textfeat.shape}")
-        print(f"textfeat has NaN: {torch.isnan(textfeat).any().item()}")
 
         cosine_similarity = torch.nn.CosineSimilarity(dim=-1)
 
