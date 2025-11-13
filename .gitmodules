@@ -1,0 +1,4 @@
+[submodule "gradslam"]
+	path = gradslam
+	url = https://github.com/gradslam/gradslam.git
+	branch = conceptfusion
